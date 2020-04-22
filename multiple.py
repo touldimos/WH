@@ -16,17 +16,18 @@ K = 1.96*10**9                      #Fluid's elasticity [Pa]
 μ = 0.3                             #Pipe's freedom
 M = 10                              #Intervals #10
 N = 1                               #Interval throught pipe
-n = 0                               #array
+n = 3                               #Column Number [-]
+
 local_losses = 10                   #Percentage of local losses [%]
 V_cl = 20                           #Valve Closure [s]
 PN = 120                            #Pressure nomitated [m]
 
 wb = openpyxl.load_workbook('Data.xlsx')
-data = wb.get_sheet_by_name('Data')
+data = wb['Data']
 Data = []
 
 for i in range(1, 8):
-       Data.append(data.cell(row=i, column=3).value)
+       Data.append(data.cell(row = i, column = n).value)
 zus, p_extra, zds, l, D, e, Qus = Data
 Din, A, v, f0 = WH.regcond(D, e, Qus, k)
 
@@ -41,6 +42,7 @@ ground, Pz_us, Pz_ds, Pz =  WH.gr(zds, zus, l, M, N, DH, p_extra)
 pz = Pz
 st_pr = Pz_us - ground
 dyn_pr = pz - ground
+print("The pipe's downstream head is", round(Pz_ds[-1], 3), "m")
 
 Δp, ΔP, t = WH.DP(K, ρ, D, μ, E, e, l, v, g, ground)
 Pmax_j, Pmin_j = WH.jouk(dyn_pr, Δp)
@@ -48,4 +50,5 @@ Pmax_m, Pmin_m = WH.mich(l, v, g, V_cl, dyn_pr)
 Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich = WH.Hammer(M, N, l, Pmax_j, Pmin_j, p_extra, Pmax_m, Pmin_m)
 
 print(WH.print_table(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich))
-WH.show_fig(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M)
+WH.show_fig(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN)
+WH.Check(Pmax_Jouk, PN)
