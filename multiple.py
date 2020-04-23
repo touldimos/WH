@@ -51,4 +51,5 @@ Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich = WH.Hammer(M, N, l, Pmax_j, Pmin_j, 
 
 print(WH.print_table(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich))
 WH.show_fig(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN)
+#WH.show_fig_latex(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN)
 WH.Check(Pmax_Jouk, PN)

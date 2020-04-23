@@ -85,7 +85,7 @@ def print_table(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich):
     df2 = df.round(2)
     return tabulate(df2, headers="keys", tablefmt="simple", numalign="decimal", showindex = False)
 
-def show_fig(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN):
+def show_fig_latex(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN):
     plt.rc('text', usetex=True)  
     plt.rc('font', family='serif')
     fig, ax = plt.subplots()
@@ -103,6 +103,27 @@ def show_fig(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN):
     ax.set_title('Case of Sudden Closure and Slow Valve Closure at ' + str(V_cl) + ' sec', size= 15)
     plt.ylabel('Pressure [m]', size = 12)
     plt.xlabel('Length [m]', size = 12)
+    plt.ylim(0, PN + 10 )
+    plt.xlim(0, l + 10)
+    plt.grid(linestyle='dotted')
+    plt.show()
+
+def show_fig(Pmax_Jouk, Pmin_Jouk, Pmax_Mich, Pmin_Mich, V_cl, l, M, PN):
+    fig, ax = plt.subplots()
+    ls = np.linspace(0, l, M + 1)
+    l1 = plt.plot(ls, Pmax_Jouk, label = 'Max Sudden closure')
+    l2 = plt.plot(ls, Pmin_Jouk, label = 'Min Sudden closure')
+    l3 = plt.plot(ls, Pmax_Mich, label = 'Max Slow closure')
+    l4 = plt.plot(ls, Pmin_Mich, label ='Min Slow closure')
+    l5 = plt.hlines(PN, 0, l, linestyles = '--', color = 'r', linewidth = 2.5, label = 'PN')
+    plt.annotate(round(Pmax_Jouk[-1], 3), (l, Pmax_Jouk[-1]), textcoords="offset points", xytext = (0, 10), ha='right', fontsize = 8)
+    plt.annotate(round(Pmin_Jouk[-1], 3), (l, Pmin_Jouk[-1]), textcoords="offset points", xytext = (0, 10), ha='right', fontsize = 8)
+    legend = ax.legend(loc = 'lower left', fontsize = 9)
+    fig.suptitle('Development of pressures', fontsize=15)
+    fig.subplots_adjust(top=0.85)
+    ax.set_title('Case of Sudden Closure and Slow Valve Closure at ' + str(V_cl) + ' sec', size= 12)
+    plt.ylabel('Pressure [m]', size = 10)
+    plt.xlabel('Length [m]', size = 10)
     plt.ylim(0, PN + 10 )
     plt.xlim(0, l + 10)
     plt.grid(linestyle='dotted')
