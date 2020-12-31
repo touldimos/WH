@@ -2,10 +2,9 @@ from tkinter import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-# from ipywidgets import interact, interactive, fixed, interact_manual
 
 main = Tk()
-# main.geometry('880x250')
+main.geometry('950x280')
 Label(main, text = "Properties of the fluid", font=("Helvetica", 8, 'bold')).grid(row=0)
 
 Label(main, text = "Fluid's viscosity (V) [m\u00b2/s]:", font=("Helvetica", 8)).grid(row=1)
@@ -38,7 +37,7 @@ Label(main, text = "Minimum Head (Hmax) [m]:", font=("Helvetica", 8)).grid(row=1
 
 CheckVar1 = IntVar()
 CheckVar2 = IntVar()
-# CheckVar3 = IntVar()
+CheckVar3 = IntVar()
 
 C1 = Checkbutton(main, text = "Jouk", variable = CheckVar1, \
                  onvalue = 1, offvalue = 0, height=1, \
@@ -46,13 +45,14 @@ C1 = Checkbutton(main, text = "Jouk", variable = CheckVar1, \
 C2 = Checkbutton(main, text = "Mich", variable = CheckVar2, \
                  onvalue = 1, offvalue = 0, height=1, \
                  width = 20)
-# C3 = Checkbutton(main, text = "Export Head", variable = CheckVar3, \
-#                  onvalue = 1, offvalue = 0, height=1, \
-#                  width = 20)
+C3 = Checkbutton(main, text = "Export Head", variable = CheckVar3, \
+                  onvalue = 1, offvalue = 0, height=1, \
+                  width = 20)
 
 C1.grid(row=7, column=5)
 C2.grid(row=7, column=6)
-# C3.grid(row=10, column=2)
+C3.grid(row=10, column=2)
+
 num1 = Entry(main)
 num1.insert(0, '{:2e}'.format(1.01*10**-6))
 num2 = Entry(main)
@@ -122,8 +122,6 @@ def hammer():
     Kf = float(num3.get())               #Fluid's elasticity [Pa]
     rho = float(num4.get())              #Fluid's density [kg/m3]
     mi = float(num5.get())               #Pipe's freedom
-    
-    #Initial conditions
     elevd = float(num6.get())
     elevup = float(num7.get())
     Q = float(num8.get())
@@ -272,11 +270,12 @@ def hammer():
     blank1.insert(0, np.round(Head[10].min(), 4))
     
     
-    # if CheckVar3.get() == True:
-    #     Head.astype(float).round(3).to_excel('transient.xlsx')
-        
+    if CheckVar3.get():
+        writer = pd.ExcelWriter(r'C:\Users\owner\Google Drive 2\Python_notes\WM\transient.xlsx', engine='xlsxwriter')
+        Head.astype(float).round(3).to_excel(writer, sheet_name='H')
+        writer.save()
     time = Head.index * dt
-    
+
     plt.figure()
     plt.plot(time, Head[node_to_plot], 'b', zorder = 11)
     plt.vlines(tclose, -abs(Head[10].min()), Head[10].max(), 'r', ls = '--', alpha = 0.75, zorder = 10)
