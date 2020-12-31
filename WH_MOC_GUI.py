@@ -45,7 +45,7 @@ C1 = Checkbutton(main, text = "Jouk", variable = CheckVar1, \
 C2 = Checkbutton(main, text = "Mich", variable = CheckVar2, \
                  onvalue = 1, offvalue = 0, height=1, \
                  width = 20)
-C3 = Checkbutton(main, text = "Export Head", variable = CheckVar3, \
+C3 = Checkbutton(main, text = "Export Transient", variable = CheckVar3, \
                   onvalue = 1, offvalue = 0, height=1, \
                   width = 20)
 
@@ -271,9 +271,12 @@ def hammer():
     
     
     if CheckVar3.get():
-        writer = pd.ExcelWriter(r'C:\Users\owner\Google Drive 2\Python_notes\WM\transient.xlsx', engine='xlsxwriter')
+        writer = pd.ExcelWriter('Transient_Results.xlsx', engine='xlsxwriter')
         Head.astype(float).round(3).to_excel(writer, sheet_name='H')
+        Discharge.astype(float).round(3).to_excel(writer, sheet_name='Q')
+        Velocity.astype(float).round(3).to_excel(writer, sheet_name='V')
         writer.save()
+
     time = Head.index * dt
 
     plt.figure()
@@ -290,33 +293,89 @@ def hammer():
     plt.show();
     
     jou = CheckVar1.get()
-    mic = CheckVar1.get()
+    mic = CheckVar2.get()
     
     timming = time_to_plot * dt
+    
+    # if not jou and not mic:
+    #     plt.figure()
+    #     plt.plot(Head.loc[time_to_plot], 'b', zorder = 10)
+    #     plt.plot(pipez, 'darkgreen', alpha = 0.8, zorder = 10)
+    #     plt.plot(Head.max(axis = 0), 'r--')
+    #     plt.plot(Head.min(axis = 0), 'y--')
+    #     plt.hlines(0, 0, nodes - 1, 'black', zorder = 9)
+    #     plt.vlines(0, -abs(Head[10].min()), Head[10].max(), 'black', zorder = 8)        
+    #     plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum'])
+    #     plt.title('Time {:.3f} sec'.format(timming * dt))
+    #     plt.xlabel('Nodes [-]')
+    #     plt.ylabel('Head [m]')
+    #     plt.grid()
+    #     plt.show();
+    
+    # if jou and not mic:
+    #     plt.figure()
+    #     plt.plot(Head.loc[time_to_plot], 'b', zorder = 10)
+    #     plt.plot(pipez, 'darkgreen', alpha = 0.8, zorder = 10)
+    #     plt.plot(Head.max(axis = 0), 'r--')
+    #     plt.plot(Head.min(axis = 0), 'y--')
+    #     plt.hlines(jouk(h, dp)[0], 0, nodes - 1)
+    #     plt.hlines(jouk(h, dp)[1], 0, nodes - 1)
+    #     plt.hlines(0, 0, nodes - 1, 'black', zorder = 9)
+    #     plt.vlines(0, -abs(Head[10].min()), Head[10].max(), 'black', zorder = 8)
+    #     plt.legend([])
+    #     plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum', 'Joukowski max', 'Joukowski max'])
+    #     plt.title('Time {:.3f} sec'.format(timming * dt))
+    #     plt.xlabel('Nodes [-]')
+    #     plt.ylabel('Head [m]')
+    #     plt.grid()
+    #     plt.show();
+    
+    # if tclose >= 10 and jou and mic:
+    #     plt.figure()
+    #     plt.plot(Head.loc[time_to_plot], 'b', zorder = 10)
+    #     plt.plot(pipez, 'darkgreen', alpha = 0.8, zorder = 10)
+    #     plt.plot(Head.max(axis = 0), 'r--')
+    #     plt.plot(Head.min(axis = 0), 'y--')
+    #     plt.hlines(jouk(h, dp)[0], 0, nodes - 1)
+    #     plt.hlines(jouk(h, dp)[1], 0, nodes - 1)
+    #     plt.hlines(mich(l, v, g, tclose, h)[0], 0, nodes - 1)
+    #     plt.hlines(mich(l, v, g, tclose, h)[1], 0, nodes - 1)
+    #     plt.hlines(jouk(h, dp)[0], 0, nodes - 1)
+    #     plt.hlines(jouk(h, dp)[1], 0, nodes - 1)
+    #     plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum', 'Joukowski max', 'Joukowski max', 'Michaud max', 'Michaud min'])
+    #     plt.hlines(0, 0, nodes - 1, 'black', zorder = 9)
+    #     plt.vlines(0, -abs(Head[10].min()), Head[10].max(), 'black', zorder = 8)
+    #     plt.title('Time {:.3f} sec'.format(timming * dt))
+    #     plt.xlabel('Nodes [-]')
+    #     plt.ylabel('Head [m]')
+    #     plt.grid()
+    #     plt.show();
     
     plt.figure()
     plt.plot(Head.loc[time_to_plot], 'b', zorder = 10)
     plt.plot(pipez, 'darkgreen', alpha = 0.8, zorder = 10)
     plt.plot(Head.max(axis = 0), 'r--')
     plt.plot(Head.min(axis = 0), 'y--')
-    plt.hlines(0, 0, nodes - 1, 'black', zorder = 9)
-    plt.vlines(0, -abs(Head[10].min()), Head[10].max(), 'black', zorder = 8)
-    plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum'])
-    if tclose > 0 and mic and jou:
-        plt.hlines(mich(l, v, g, tclose, h)[0], 0, nodes - 1)
-        plt.hlines(mich(l, v, g, tclose, h)[1], 0, nodes - 1)
-        plt.hlines(jouk(h, dp)[0], 0, nodes - 1)
+
+    if tclose >= 10 and mic and jou:
+
+        plt.hlines(jouk(h, dp)[0], 0, nodes - 1, ls = '--')
         plt.hlines(jouk(h, dp)[1], 0, nodes - 1)
+        plt.hlines(mich(l, v, g, tclose, h)[0], 0, nodes - 1, 'coral')
+        plt.hlines(mich(l, v, g, tclose, h)[1], 0, nodes - 1, 'coral', ls = '--')
         plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum', 'Joukowski max', 'Joukowski max', 'Michaud max', 'Michaud min'])
-    elif tclose > 10 and mic and not jou:
-        plt.hlines(mich(l, v, g, tclose, h)[0], 0, nodes - 1)
-        plt.hlines(mich(l, v, g, tclose, h)[1], 0, nodes - 1)
+    elif tclose >= 10 and mic and not jou:
+        plt.hlines(mich(l, v, g, tclose, h)[0], 0, nodes - 1, 'coral')
+        plt.hlines(mich(l, v, g, tclose, h)[1], 0, nodes - 1, 'coral', ls = '--')
         plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum', 'Michaud max', 'Michaud min'])
     elif jou:
-        plt.hlines(jouk(h, dp)[0], 0, nodes - 1)
+        plt.hlines(jouk(h, dp)[0], 0, nodes - 1, ls = '--')
         plt.hlines(jouk(h, dp)[1], 0, nodes - 1)
         plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum', 'Joukowski max', 'Joukowski max'])
-            
+    else:
+        plt.legend(['Pressure wave', 'Ground level', 'Maximum', 'Minimum'])
+    plt.vlines(0, -abs(Head[10].min()), Head[10].max(), 'black', zorder = 8)
+    plt.hlines(0, 0, nodes - 1, 'black', zorder = 9)
     plt.title('Time {:.3f} sec'.format(timming * dt))
     plt.xlabel('Nodes [-]')
     plt.ylabel('Head [m]')
