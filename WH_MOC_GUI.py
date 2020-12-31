@@ -38,7 +38,7 @@ Label(main, text = "Minimum Head (Hmax) [m]:", font=("Helvetica", 8)).grid(row=1
 
 CheckVar1 = IntVar()
 CheckVar2 = IntVar()
-CheckVar3 = IntVar()
+# CheckVar3 = IntVar()
 
 C1 = Checkbutton(main, text = "Jouk", variable = CheckVar1, \
                  onvalue = 1, offvalue = 0, height=1, \
@@ -46,13 +46,13 @@ C1 = Checkbutton(main, text = "Jouk", variable = CheckVar1, \
 C2 = Checkbutton(main, text = "Mich", variable = CheckVar2, \
                  onvalue = 1, offvalue = 0, height=1, \
                  width = 20)
-C3 = Checkbutton(main, text = "Export Head", variable = CheckVar3, \
-                 onvalue = 1, offvalue = 0, height=1, \
-                 width = 20)
+# C3 = Checkbutton(main, text = "Export Head", variable = CheckVar3, \
+#                  onvalue = 1, offvalue = 0, height=1, \
+#                  width = 20)
 
 C1.grid(row=7, column=5)
 C2.grid(row=7, column=6)
-C3.grid(row=10, column=2)
+# C3.grid(row=10, column=2)
 num1 = Entry(main)
 num1.insert(0, '{:2e}'.format(1.01*10**-6))
 num2 = Entry(main)
@@ -189,9 +189,9 @@ def hammer():
     Vic = np.ones(nodes) * v
     Hic = h
     
-    def jouk(h, Δp):
-        Pmax_j = max(h) + Δp
-        Pmin_j = max(h) - Δp
+    def jouk(h, dp):
+        Pmax_j = max(h) + dp
+        Pmin_j = max(h) - dp
         return Pmax_j, Pmin_j
     
     def mich(l, v, g, tclose, h):
@@ -271,6 +271,10 @@ def hammer():
     blank.insert(0, np.round(Head[10].max(), 4))
     blank1.insert(0, np.round(Head[10].min(), 4))
     
+    
+    # if CheckVar3.get() == True:
+    #     Head.astype(float).round(3).to_excel('transient.xlsx')
+        
     time = Head.index * dt
     
     plt.figure()
@@ -319,9 +323,7 @@ def hammer():
     plt.ylabel('Head [m]')
     plt.grid()
     plt.show();
-    
-    if CheckVar3.get():
-        Head.astype(float).round(3).to_excel('transient_results.xlsx')
+
         
 Button(main, text='Calculate', command=hammer).grid(row=10, column=1, sticky=W)
 
